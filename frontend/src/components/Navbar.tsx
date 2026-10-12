@@ -1,19 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Sun,
-  Moon,
-  HelpCircle,
   Menu,
   X,
-  Server,
-  Cpu,
   KeyRound,
   ArrowRight,
   Sparkles,
 } from "lucide-react";
-import { useApp } from "../state/AppContext";
-import { Tooltip } from "./Tooltip";
 import { scrollToTarget } from "../lib/smoothScroll";
 
 interface NavItem {
@@ -23,15 +16,6 @@ interface NavItem {
 }
 
 export const Navbar: React.FC = () => {
-  const {
-    theme,
-    toggleTheme,
-    engine,
-    setEngine,
-    backendOnline,
-    openTour,
-  } = useApp();
-
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
   const [activeSection, setActiveSection] = useState<string>("simulator");
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
@@ -201,72 +185,11 @@ export const Navbar: React.FC = () => {
 
           {/* ===================== RIGHT ACTION CONTROLS ===================== */}
           <div className="hidden sm:flex items-center gap-3 shrink-0">
-            {/* Engine Pill Switcher */}
-            <Tooltip content={engine === "api" ? "FastAPI Server Active (Port 8000)" : "In-Browser BigInt Active"}>
-              <div className="flex items-center bg-neutral-900/90 border border-neutral-700/70 rounded-full p-1 text-xs shadow-inner">
-                <button
-                  type="button"
-                  onClick={() => setEngine("api")}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full font-bold transition-all ${
-                    engine === "api"
-                      ? "bg-neutral-800 text-white shadow-sm ring-1 ring-white/10"
-                      : "text-neutral-400 hover:text-neutral-200"
-                  }`}
-                  aria-label="Switch to FastAPI Server Engine"
-                >
-                  <Server className="w-3.5 h-3.5 text-orange-400" />
-                  <span>API</span>
-                  <span
-                    className={`w-1.5 h-1.5 rounded-full ${
-                      backendOnline ? "bg-emerald-400 animate-pulse" : "bg-amber-400"
-                    }`}
-                  />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setEngine("local")}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full font-bold transition-all ${
-                    engine === "local"
-                      ? "bg-neutral-800 text-white shadow-sm ring-1 ring-white/10"
-                      : "text-neutral-400 hover:text-neutral-200"
-                  }`}
-                  aria-label="Switch to In-Browser BigInt Engine"
-                >
-                  <Cpu className="w-3.5 h-3.5 text-neutral-400" />
-                  <span>Local</span>
-                </button>
-              </div>
-            </Tooltip>
-
-            {/* Guided Tour Walkthrough Button */}
-            <Tooltip content="Quick walkthrough guide">
-              <button
-                type="button"
-                onClick={openTour}
-                className="p-2.5 text-neutral-400 hover:text-white rounded-full bg-neutral-900/90 border border-neutral-700/70 hover:border-neutral-600 transition-all shadow-sm transform hover:scale-105 active:scale-95"
-                aria-label="Start guided tour"
-              >
-                <HelpCircle className="w-4 h-4" />
-              </button>
-            </Tooltip>
-
-            {/* Color Theme Toggle */}
-            <Tooltip content={`Toggle ${theme === "dark" ? "Light" : "Dark"} mode`}>
-              <button
-                type="button"
-                onClick={toggleTheme}
-                className="p-2.5 text-neutral-400 hover:text-white rounded-full bg-neutral-900/90 border border-neutral-700/70 hover:border-neutral-600 transition-all shadow-sm transform hover:scale-105 active:scale-95"
-                aria-label="Toggle color theme"
-              >
-                {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-              </button>
-            </Tooltip>
-
             {/* Primary Launch Demo CTA with Orange Glow */}
             <button
               type="button"
               onClick={() => handleNavClick("#simulator", "simulator")}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold text-xs sm:text-[13px] shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 whitespace-nowrap"
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold text-xs sm:text-[13px] shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 whitespace-nowrap"
             >
               <span>Launch Demo</span>
               <ArrowRight className="w-4 h-4" />
@@ -324,36 +247,15 @@ export const Navbar: React.FC = () => {
                 })}
               </div>
 
-              {/* Mobile Engine Switcher & CTA */}
-              <div className="pt-3 border-t border-neutral-800/80 flex items-center justify-between gap-3">
-                <div className="flex items-center bg-neutral-900 border border-neutral-800 rounded-full p-1 text-xs">
-                  <button
-                    type="button"
-                    onClick={() => setEngine("api")}
-                    className={`px-3 py-1 rounded-full font-bold ${
-                      engine === "api" ? "bg-neutral-800 text-white" : "text-neutral-400"
-                    }`}
-                  >
-                    API
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setEngine("local")}
-                    className={`px-3 py-1 rounded-full font-bold ${
-                      engine === "local" ? "bg-neutral-800 text-white" : "text-neutral-400"
-                    }`}
-                  >
-                    Local
-                  </button>
-                </div>
-
+              {/* Mobile CTA */}
+              <div className="pt-3 border-t border-neutral-800/80">
                 <button
                   type="button"
                   onClick={() => handleNavClick("#simulator", "simulator")}
-                  className="px-4 py-2 rounded-full bg-orange-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-orange-500/30"
+                  className="w-full py-2.5 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-orange-500/30"
                 >
                   <span>Launch Demo</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
             </div>
