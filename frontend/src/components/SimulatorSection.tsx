@@ -170,7 +170,7 @@ export const SimulatorSection: React.FC = () => {
 
   return (
     <section id="simulator" className="pt-1 sm:pt-2 pb-5 sm:pb-6 scroll-mt-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-2.5 sm:space-y-3">
+      <div className="max-w-[1440px] mx-auto px-3 sm:px-4 lg:px-6 space-y-2.5 sm:space-y-3">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto">
           <span className="text-xs font-bold uppercase tracking-wider text-orange-400 bg-orange-500/10 px-3 py-1 rounded-full border border-orange-500/20">

@@ -49,7 +49,7 @@ export const Navbar: React.FC = () => {
           : "bg-[#050508] border-b border-neutral-800/50"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1440px] mx-auto px-3 sm:px-4 lg:px-6">
         <div className="flex items-center justify-between h-16">
           {/* Brand Logo with Orange Key Icon */}
           <div className="flex items-center gap-3">
