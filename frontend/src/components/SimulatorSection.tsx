@@ -169,14 +169,14 @@ export const SimulatorSection: React.FC = () => {
   }, [togglePlay, next, prev, reset]);
 
   return (
-    <section id="simulator" className="pt-2 sm:pt-4 pb-6 sm:pb-8 scroll-mt-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-3 sm:space-y-4">
+    <section id="simulator" className="pt-1 sm:pt-2 pb-5 sm:pb-6 scroll-mt-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-2.5 sm:space-y-3">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto">
           <span className="text-xs font-bold uppercase tracking-wider text-orange-400 bg-orange-500/10 px-3 py-1 rounded-full border border-orange-500/20">
             Interactive Centerpiece
           </span>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-white mt-1.5 tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-white mt-1 tracking-tight">
             Diffie-Hellman &amp; MITM Simulator
           </h2>
           <p className="text-xs sm:text-sm text-neutral-300 mt-0.5">
@@ -185,7 +185,7 @@ export const SimulatorSection: React.FC = () => {
         </div>
 
         {/* Unified Main Card (Matching Paint-Mixing Analogy architecture) */}
-        <div className="bg-[#0c0c12] rounded-3xl p-5 sm:p-7 border border-neutral-800 shadow-2xl space-y-5">
+        <div className="bg-[#0c0c12] rounded-3xl p-4 sm:p-5 border border-neutral-800 shadow-2xl space-y-3.5">
           {/* 3-Station Stage + Narrative Card + Step Scrubber */}
           <VisualStage
             simulation={simulation}
