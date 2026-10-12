@@ -58,22 +58,22 @@ export const GuidedTourModal: React.FC = () => {
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
         <motion.div
           initial={{ opacity: 0, scale: 0.9, y: 15 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 15 }}
-          className="relative max-w-md w-full glass-panel rounded-3xl p-6 sm:p-7 border border-slate-700/80 shadow-2xl space-y-5"
+          className="relative max-w-md w-full bg-[#0c0c12] rounded-3xl p-6 sm:p-7 border border-neutral-800 shadow-2xl space-y-5"
         >
           {/* Header */}
           <div className="flex items-center justify-between">
-            <span className="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20">
+            <span className="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-full bg-orange-500/10 text-orange-400 border border-orange-500/20">
               <Sparkles className="w-3.5 h-3.5" /> Step {tourIndex + 1} of {tourSteps.length}
             </span>
             <button
               type="button"
               onClick={closeTour}
-              className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+              className="p-1.5 text-neutral-400 hover:text-white rounded-lg hover:bg-neutral-800 transition-colors"
               aria-label="Close tour"
             >
               <X className="w-4 h-4" />
@@ -83,7 +83,7 @@ export const GuidedTourModal: React.FC = () => {
           {/* Content */}
           <div className="space-y-2">
             <h3 className="text-lg font-bold text-white">{current.title}</h3>
-            <p className="text-xs text-slate-300 leading-relaxed">{current.description}</p>
+            <p className="text-xs text-neutral-300 leading-relaxed">{current.description}</p>
           </div>
 
           {/* Progress dots */}
@@ -94,7 +94,7 @@ export const GuidedTourModal: React.FC = () => {
                 type="button"
                 onClick={() => setTourIndex(i)}
                 className={`h-1.5 rounded-full transition-all ${
-                  i === tourIndex ? "w-6 bg-sky-400" : "w-1.5 bg-slate-700 hover:bg-slate-500"
+                  i === tourIndex ? "w-6 bg-orange-500" : "w-1.5 bg-neutral-800 hover:bg-neutral-600"
                 }`}
                 aria-label={`Jump to step ${i + 1}`}
               />
@@ -102,12 +102,12 @@ export const GuidedTourModal: React.FC = () => {
           </div>
 
           {/* Action buttons */}
-          <div className="flex items-center justify-between pt-3 border-t border-slate-800">
+          <div className="flex items-center justify-between pt-3 border-t border-neutral-800">
             <button
               type="button"
               disabled={tourIndex === 0}
               onClick={() => setTourIndex((prev) => prev - 1)}
-              className="px-3.5 py-1.5 rounded-xl text-xs font-medium text-slate-300 hover:text-white disabled:opacity-30 flex items-center gap-1"
+              className="px-3.5 py-1.5 rounded-xl text-xs font-medium text-neutral-300 hover:text-white disabled:opacity-30 flex items-center gap-1"
             >
               <ChevronLeft className="w-3.5 h-3.5" /> Back
             </button>
@@ -116,7 +116,7 @@ export const GuidedTourModal: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setTourIndex((prev) => prev + 1)}
-                className="px-4 py-2 rounded-xl text-xs font-semibold bg-sky-500 hover:bg-sky-400 text-white shadow-md shadow-sky-500/20 flex items-center gap-1.5"
+                className="px-4 py-2 rounded-xl text-xs font-bold bg-orange-500 hover:bg-orange-600 text-white shadow-md shadow-orange-500/25 flex items-center gap-1.5 transition-all"
               >
                 <span>Next</span>
                 <ChevronRight className="w-3.5 h-3.5" />
@@ -125,7 +125,7 @@ export const GuidedTourModal: React.FC = () => {
               <button
                 type="button"
                 onClick={closeTour}
-                className="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-500 hover:bg-emerald-400 text-white shadow-md shadow-emerald-500/20 flex items-center gap-1.5"
+                className="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-white shadow-md shadow-emerald-500/25 flex items-center gap-1.5 transition-all"
               >
                 <Check className="w-3.5 h-3.5" />
                 <span>Get Started!</span>

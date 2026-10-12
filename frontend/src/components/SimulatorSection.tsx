@@ -173,13 +173,13 @@ export const SimulatorSection: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         {/* Section Title */}
         <div className="text-center max-w-3xl mx-auto">
-          <span className="text-xs font-bold uppercase tracking-wider text-sky-400 bg-sky-500/10 px-3 py-1 rounded-full border border-sky-500/20">
+          <span className="text-xs font-bold uppercase tracking-wider text-orange-400 bg-orange-500/10 px-3 py-1 rounded-full border border-orange-500/20">
             Interactive Centerpiece
           </span>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white mt-3 tracking-tight">
             Diffie-Hellman & MITM Simulator
           </h2>
-          <p className="text-sm sm:text-base text-slate-300 mt-2">
+          <p className="text-sm sm:text-base text-neutral-300 mt-2">
             Watch mathematical values travel across the public channel. Toggle Man-in-the-Middle mode to inspect how Eve intercepts and rewrites the session.
           </p>
         </div>

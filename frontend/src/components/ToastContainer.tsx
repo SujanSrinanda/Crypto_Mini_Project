@@ -15,7 +15,7 @@ export const ToastContainer: React.FC = () => {
       case "error":
         return <AlertCircle className="w-4 h-4 text-rose-400" />;
       default:
-        return <Info className="w-4 h-4 text-sky-400" />;
+        return <Info className="w-4 h-4 text-orange-400" />;
     }
   };
 
@@ -28,7 +28,7 @@ export const ToastContainer: React.FC = () => {
       case "error":
         return "border-rose-500/40 bg-rose-950/80 text-rose-100";
       default:
-        return "border-sky-500/40 bg-slate-900/90 text-sky-100";
+        return "border-orange-500/40 bg-neutral-900/95 text-neutral-100";
     }
   };
 

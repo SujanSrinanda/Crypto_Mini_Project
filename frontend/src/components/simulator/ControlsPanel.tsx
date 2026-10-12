@@ -7,7 +7,7 @@ import {
   ChevronRight,
   Dices,
   Flame,
-  Sliders,
+  ShieldCheck,
 } from "lucide-react";
 import { Tooltip } from "../Tooltip";
 
@@ -53,8 +53,6 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
   onGChange,
   alicePrivate,
   bobPrivate,
-  onAlicePrivateChange,
-  onBobPrivateChange,
   onRandomizePrivateKeys,
   message,
   onMessageChange,
@@ -77,274 +75,212 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
   isAtEnd,
 }) => {
   return (
-    <div className="glass-panel rounded-2xl p-5 border border-slate-800 shadow-xl space-y-5">
-      {/* Top Header & Bit Selector */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-800/80">
-        <div className="flex items-center gap-2">
-          <Sliders className="w-5 h-5 text-sky-400" />
-          <h2 className="text-base font-bold text-white tracking-wide">
-            Simulation Control Deck
-          </h2>
+    <div className="bg-[#0c0c12] border border-neutral-800 rounded-2xl p-5 sm:p-6 shadow-2xl space-y-5">
+      {/* Top Deck: Key Size & Mode Switches */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-neutral-800/80">
+        {/* Preset Selector */}
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider">
+            Parameter Mode:
+          </span>
+          <div className="flex items-center bg-neutral-900 border border-neutral-800 rounded-full p-1 text-xs">
+            <button
+              type="button"
+              onClick={() => onSelectBitSize("toy")}
+              className={`px-4 py-1.5 rounded-full font-bold transition-all ${
+                bitSize === "toy"
+                  ? "bg-orange-500 text-white shadow-md shadow-orange-500/30"
+                  : "text-neutral-400 hover:text-white"
+              }`}
+            >
+              Toy Mode (p = 23, g = 5) &bull; Classroom Mental Math
+            </button>
+            <button
+              type="button"
+              onClick={() => onSelectBitSize("256")}
+              className={`px-4 py-1.5 rounded-full font-bold transition-all ${
+                bitSize === "256"
+                  ? "bg-orange-500 text-white shadow-md shadow-orange-500/30"
+                  : "text-neutral-400 hover:text-white"
+              }`}
+            >
+              Standard 256-Bit Prime
+            </button>
+          </div>
         </div>
 
-        {/* Parameter Size Tabs */}
-        <div className="flex flex-wrap items-center gap-1.5 p-1 rounded-xl bg-slate-950/70 border border-slate-800">
-          <span className="text-xs font-semibold text-slate-400 px-2">Key Size:</span>
-          {[
-            { id: "toy", label: "Toy (p=23)", hint: "Mental math & classroom proof" },
-            { id: "64", label: "64-bit", hint: "Large number scaling" },
-            { id: "128", label: "128-bit", hint: "Standard cryptographic security" },
-            { id: "256", label: "256-bit", hint: "Astronomically hard to crack" },
-          ].map((item) => (
-            <Tooltip key={item.id} content={item.hint}>
-              <button
-                type="button"
-                onClick={() => onSelectBitSize(item.id)}
-                className={`px-3 py-1 text-xs font-semibold rounded-lg transition-all ${
-                  bitSize === item.id
-                    ? "bg-sky-500 text-white shadow-md shadow-sky-500/30"
-                    : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
-                }`}
-              >
-                {item.label}
-              </button>
+        {/* Attack and Defense Toggles */}
+        <div className="flex flex-wrap items-center gap-3">
+          {/* MITM Attack Button */}
+          <button
+            type="button"
+            onClick={onToggleMitm}
+            className={`flex items-center gap-2.5 px-4 py-2 rounded-full text-xs font-bold transition-all border ${
+              mitm
+                ? "bg-rose-600 border-rose-400 text-white shadow-lg shadow-rose-600/30 ring-2 ring-rose-500/30"
+                : "bg-neutral-900 border-neutral-700 text-neutral-300 hover:text-white hover:border-neutral-600"
+            }`}
+          >
+            <Flame className={`w-4 h-4 ${mitm ? "text-white fill-white" : "text-rose-400"}`} />
+            <span>MITM ATTACK: {mitm ? "ACTIVE (EVE INTERCEPTING)" : "OFF"}</span>
+          </button>
+
+          {/* Authenticated DH Button */}
+          <button
+            type="button"
+            onClick={onToggleAuthenticatedDh}
+            className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all border ${
+              authenticatedDh
+                ? "bg-emerald-600 border-emerald-400 text-white shadow-lg shadow-emerald-600/30 ring-2 ring-emerald-500/30"
+                : "bg-neutral-900 border-neutral-700 text-neutral-300 hover:text-white hover:border-neutral-600"
+            }`}
+          >
+            <ShieldCheck className={`w-4 h-4 ${authenticatedDh ? "text-white" : "text-emerald-400"}`} />
+            <span>PKI DEFENSE: {authenticatedDh ? "ENABLED" : "OFF"}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Inputs Strip: Large, legible text */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+        {/* Modulus & Generator */}
+        <div className="p-3.5 rounded-xl bg-neutral-900/90 border border-neutral-800">
+          <span className="text-neutral-400 block mb-1 font-semibold uppercase tracking-wider text-[11px]">
+            Public Parameters
+          </span>
+          <div className="flex items-center gap-2 font-mono text-xs sm:text-sm text-neutral-200 pt-0.5">
+            <span className="text-neutral-400 font-bold">p =</span>
+            <Tooltip content={`Modulus p: ${p}`}>
+              <input
+                type="text"
+                value={p.length > 10 ? `${p.slice(0, 4)}...${p.slice(-3)}` : p}
+                onChange={(e) => onPChange(e.target.value)}
+                readOnly={p.length > 10}
+                className="w-24 px-2 py-1 bg-neutral-950 border border-neutral-700 rounded-lg text-orange-400 font-bold text-center focus:outline-none focus:border-orange-500 text-xs sm:text-sm font-mono truncate cursor-default"
+              />
             </Tooltip>
-          ))}
-        </div>
-      </div>
-
-      {/* Inputs Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Prime modulus p */}
-        <div>
-          <label className="block text-xs font-medium text-slate-300 mb-1">
-            Prime Modulus (<span className="font-mono text-sky-400">p</span>)
-          </label>
-          <input
-            type="text"
-            value={p}
-            onChange={(e) => onPChange(e.target.value)}
-            className="w-full px-3 py-2 text-xs font-mono bg-slate-950/80 border border-slate-700/80 rounded-xl text-slate-200 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
-            placeholder="Prime number (e.g. 23)"
-          />
+            <span className="text-neutral-400 font-bold">g =</span>
+            <input
+              type="text"
+              value={g}
+              onChange={(e) => onGChange(e.target.value)}
+              className="w-10 px-1.5 py-1 bg-neutral-950 border border-neutral-700 rounded-lg text-orange-400 font-bold text-center focus:outline-none focus:border-orange-500 text-xs sm:text-sm font-mono"
+            />
+          </div>
         </div>
 
-        {/* Generator g */}
-        <div>
-          <label className="block text-xs font-medium text-slate-300 mb-1">
-            Generator (<span className="font-mono text-sky-400">g</span>)
-          </label>
-          <input
-            type="text"
-            value={g}
-            onChange={(e) => onGChange(e.target.value)}
-            className="w-full px-3 py-2 text-xs font-mono bg-slate-950/80 border border-slate-700/80 rounded-xl text-slate-200 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
-            placeholder="Generator (e.g. 5)"
-          />
-        </div>
-
-        {/* Alice Private Key */}
-        <div>
+        {/* Private Exponents */}
+        <div className="p-3.5 rounded-xl bg-neutral-900/90 border border-neutral-800">
           <div className="flex items-center justify-between mb-1">
-            <label className="text-xs font-medium text-sky-300">
-              Alice Secret (<span className="font-mono">a</span>)
-            </label>
+            <span className="text-neutral-400 font-semibold uppercase tracking-wider text-[11px]">
+              Private Exponents
+            </span>
             <button
               type="button"
               onClick={onRandomizePrivateKeys}
-              className="text-[10px] text-slate-400 hover:text-sky-300 flex items-center gap-1"
+              className="text-[11px] text-orange-400 hover:text-orange-300 font-semibold flex items-center gap-1"
             >
-              <Dices className="w-3 h-3" /> Roll
+              <Dices className="w-3.5 h-3.5" /> Randomize
             </button>
           </div>
-          <input
-            type="text"
-            value={alicePrivate}
-            onChange={(e) => onAlicePrivateChange(e.target.value)}
-            className="w-full px-3 py-2 text-xs font-mono bg-sky-950/30 border border-sky-600/40 rounded-xl text-sky-200 focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400"
-            placeholder="Alice private (e.g. 6)"
-          />
-        </div>
-
-        {/* Bob Private Key */}
-        <div>
-          <div className="flex items-center justify-between mb-1">
-            <label className="text-xs font-medium text-emerald-300">
-              Bob Secret (<span className="font-mono">b</span>)
-            </label>
-            <button
-              type="button"
-              onClick={onRandomizePrivateKeys}
-              className="text-[10px] text-slate-400 hover:text-emerald-300 flex items-center gap-1"
-            >
-              <Dices className="w-3 h-3" /> Roll
-            </button>
+          <div className="flex items-center justify-between font-mono text-xs sm:text-sm pt-0.5">
+            <Tooltip content={`Alice private exponent: ${alicePrivate}`}>
+              <span className="text-blue-400 font-bold truncate max-w-[110px]">
+                a = {alicePrivate.length > 8 ? `${alicePrivate.slice(0, 4)}...${alicePrivate.slice(-3)}` : alicePrivate}
+              </span>
+            </Tooltip>
+            <span className="text-neutral-600 font-bold">&bull;</span>
+            <Tooltip content={`Bob private exponent: ${bobPrivate}`}>
+              <span className="text-emerald-400 font-bold truncate max-w-[110px]">
+                b = {bobPrivate.length > 8 ? `${bobPrivate.slice(0, 4)}...${bobPrivate.slice(-3)}` : bobPrivate}
+              </span>
+            </Tooltip>
           </div>
-          <input
-            type="text"
-            value={bobPrivate}
-            onChange={(e) => onBobPrivateChange(e.target.value)}
-            className="w-full px-3 py-2 text-xs font-mono bg-emerald-950/30 border border-emerald-600/40 rounded-xl text-emerald-200 focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400"
-            placeholder="Bob private (e.g. 15)"
-          />
         </div>
-      </div>
 
-      {/* Message and Tamper Inputs */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
-        <div>
-          <label className="block text-xs font-medium text-slate-300 mb-1">
+        {/* Alice's Message */}
+        <div className="p-3.5 rounded-xl bg-neutral-900/90 border border-neutral-800">
+          <span className="text-neutral-400 block mb-1 font-semibold uppercase tracking-wider text-[11px]">
             Alice's Outgoing Message
-          </label>
+          </span>
           <input
             type="text"
             value={message}
             onChange={(e) => onMessageChange(e.target.value)}
-            className="w-full px-3 py-2 text-xs font-sans bg-slate-950/80 border border-slate-700/80 rounded-xl text-slate-200 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
-            placeholder="Enter message to encrypt and transmit..."
+            className="w-full px-2.5 py-1 bg-neutral-950 border border-neutral-700 rounded-lg text-neutral-100 text-xs focus:outline-none focus:border-orange-500"
+            placeholder="Type message to encrypt..."
           />
         </div>
 
-        {mitm ? (
-          <div>
-            <label className="block text-xs font-medium text-rose-300 mb-1 flex items-center gap-1.5">
-              <Flame className="w-3.5 h-3.5 text-rose-400" />
-              Eve's Tampered Message (Injected)
-            </label>
+        {/* Tampered message / Channel status */}
+        <div className="p-3.5 rounded-xl bg-neutral-900/90 border border-neutral-800">
+          <span className={`block mb-1 font-semibold uppercase tracking-wider text-[11px] ${mitm ? "text-rose-400" : "text-neutral-400"}`}>
+            {mitm ? "Eve's Tampered Text (Forwarded to Bob)" : "Channel State"}
+          </span>
+          {mitm ? (
             <input
               type="text"
               value={tamperedMessage}
               onChange={(e) => onTamperedMessageChange(e.target.value)}
-              className="w-full px-3 py-2 text-xs font-sans bg-rose-950/30 border border-rose-500/50 rounded-xl text-rose-200 focus:outline-none focus:border-rose-400 focus:ring-1 focus:ring-rose-400"
-              placeholder="Tampered payload forwarded to Bob..."
+              className="w-full px-2.5 py-1 bg-neutral-950 border border-rose-800 rounded-lg text-rose-200 text-xs focus:outline-none focus:border-rose-400"
+              placeholder="Tampered payload forwarded..."
             />
-          </div>
-        ) : (
-          <div className="flex items-center text-xs text-slate-400 bg-slate-950/40 rounded-xl px-3 py-2 border border-slate-800">
-            <span>Honest Mode: Message will be delivered unmodified to Bob via symmetric key stream.</span>
-          </div>
-        )}
+          ) : (
+            <span className="text-emerald-400 text-xs font-medium block pt-1">
+              Direct Peer-to-Peer &bull; Untampered Channel
+            </span>
+          )}
+        </div>
       </div>
 
-      {/* Switches & Playback Bar */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pt-2">
-        {/* Toggle Switches */}
-        <div className="flex flex-wrap items-center gap-4">
-          {/* MITM Switch */}
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              role="switch"
-              aria-checked={mitm}
-              onClick={onToggleMitm}
-              className={`relative inline-flex h-7 w-14 shrink-0 cursor-pointer rounded-full border-2 transition-colors duration-200 ease-in-out focus:outline-none ${
-                mitm
-                  ? "bg-rose-600 border-rose-400 shadow-lg shadow-rose-600/40"
-                  : "bg-slate-800 border-slate-700"
-              }`}
-            >
-              <span
-                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out mt-0.5 ${
-                  mitm ? "translate-x-7" : "translate-x-1"
-                }`}
-              />
-            </button>
-            <div className="flex flex-col">
-              <span className={`text-xs font-bold uppercase tracking-wider ${mitm ? "text-rose-400" : "text-slate-300"}`}>
-                MITM Mode {mitm ? "ON" : "OFF"}
-              </span>
-              <span className="text-[10px] text-slate-400">
-                {mitm ? "Eve intercepts & modifies packets" : "Honest peer-to-peer exchange"}
-              </span>
-            </div>
+      {/* Main Playback Bar (Large & Prominent for Presenting) */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
+        {/* Step Counter Badge */}
+        <div className="flex items-center gap-3">
+          <div className="px-4 py-1.5 rounded-full bg-neutral-900 border border-neutral-700 font-mono text-xs font-bold text-white">
+            STEP {totalSteps > 0 ? currentStepIndex + 1 : 0} OF {totalSteps}
           </div>
-
-          {/* Authenticated DH Switch */}
-          <div className="flex items-center gap-3 border-l border-slate-800 pl-4">
-            <button
-              type="button"
-              role="switch"
-              aria-checked={authenticatedDh}
-              onClick={onToggleAuthenticatedDh}
-              className={`relative inline-flex h-6 w-12 shrink-0 cursor-pointer rounded-full border-2 transition-colors duration-200 ease-in-out focus:outline-none ${
-                authenticatedDh
-                  ? "bg-emerald-600 border-emerald-400 shadow-md shadow-emerald-600/30"
-                  : "bg-slate-800 border-slate-700"
-              }`}
-            >
-              <span
-                className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out mt-0.5 ${
-                  authenticatedDh ? "translate-x-6" : "translate-x-1"
-                }`}
-              />
-            </button>
-            <div className="flex flex-col">
-              <span className={`text-xs font-semibold ${authenticatedDh ? "text-emerald-400" : "text-slate-400"}`}>
-                Authenticated DH
-              </span>
-              <span className="text-[10px] text-slate-400">
-                {authenticatedDh ? "Digital certificates enabled" : "Unauthenticated DH"}
-              </span>
-            </div>
-          </div>
+          <span className="text-xs text-neutral-400 font-medium hidden sm:inline">
+            {totalSteps > 1 ? Math.round((currentStepIndex / (totalSteps - 1)) * 100) : 0}% of Protocol Completed
+          </span>
         </div>
 
-        {/* Playback Controls */}
-        <div className="flex items-center gap-2">
-          {/* Speed Selector */}
-          <div className="flex items-center gap-1 bg-slate-950/70 border border-slate-800 rounded-xl p-1 mr-2">
-            {[0.5, 1, 2].map((s) => (
-              <button
-                key={s}
-                type="button"
-                onClick={() => onSpeedChange(s)}
-                className={`px-2 py-0.5 text-[11px] font-semibold rounded-md ${
-                  playbackSpeed === s
-                    ? "bg-slate-800 text-sky-400 border border-slate-700"
-                    : "text-slate-400 hover:text-slate-200"
-                }`}
-              >
-                {s}x
-              </button>
-            ))}
-          </div>
-
+        {/* Primary Large Player Buttons */}
+        <div className="flex items-center gap-3">
           {/* Step Back */}
-          <Tooltip content="Previous step (← Arrow)">
+          <Tooltip content="Previous step (Left Arrow)">
             <button
               type="button"
               disabled={isAtStart}
               onClick={onPrev}
-              className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:bg-slate-800 disabled:opacity-40 disabled:pointer-events-none transition-colors"
+              className="p-2.5 rounded-xl bg-neutral-900 hover:bg-neutral-800 border border-neutral-700 text-neutral-200 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-all"
               aria-label="Previous step"
             >
-              <ChevronLeft className="w-4 h-4" />
+              <ChevronLeft className="w-5 h-5" />
             </button>
           </Tooltip>
 
-          {/* Play / Pause */}
-          <Tooltip content={isPlaying ? "Pause (Space)" : "Play animation (Space)"}>
-            <button
-              type="button"
-              onClick={onTogglePlay}
-              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-semibold text-xs shadow-lg shadow-sky-500/25 flex items-center gap-2 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
-              aria-label={isPlaying ? "Pause simulation" : "Play simulation"}
-            >
-              {isPlaying ? <Pause className="w-4 h-4 fill-white" /> : <Play className="w-4 h-4 fill-white" />}
-              <span>{isPlaying ? "Pause" : "Play"}</span>
-            </button>
-          </Tooltip>
+          {/* Big Play / Pause Button in Vibrant Orange */}
+          <button
+            type="button"
+            onClick={onTogglePlay}
+            className="px-6 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm shadow-lg shadow-orange-500/25 flex items-center gap-2.5 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+            aria-label={isPlaying ? "Pause simulation" : "Play simulation"}
+          >
+            {isPlaying ? <Pause className="w-4 h-4 fill-white" /> : <Play className="w-4 h-4 fill-white" />}
+            <span>{isPlaying ? "PAUSE" : "PLAY DEMO"}</span>
+          </button>
 
           {/* Step Forward */}
-          <Tooltip content="Next step (→ Arrow)">
+          <Tooltip content="Next step (Right Arrow)">
             <button
               type="button"
               disabled={isAtEnd}
               onClick={onNext}
-              className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:bg-slate-800 disabled:opacity-40 disabled:pointer-events-none transition-colors"
+              className="p-2.5 rounded-xl bg-neutral-900 hover:bg-neutral-800 border border-neutral-700 text-neutral-200 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-all"
               aria-label="Next step"
             >
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRight className="w-5 h-5" />
             </button>
           </Tooltip>
 
@@ -353,32 +289,30 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
             <button
               type="button"
               onClick={onReset}
-              className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors"
+              className="p-2.5 rounded-xl bg-neutral-900 hover:bg-neutral-800 border border-neutral-700 text-neutral-400 hover:text-neutral-200 transition-all ml-1"
               aria-label="Reset simulation"
             >
               <RotateCcw className="w-4 h-4" />
             </button>
           </Tooltip>
-        </div>
-      </div>
 
-      {/* Progress Bar & Step Indicator */}
-      <div className="pt-2">
-        <div className="flex items-center justify-between text-xs text-slate-400 mb-1.5 font-mono">
-          <span>
-            Step {totalSteps > 0 ? currentStepIndex + 1 : 0} of {totalSteps}
-          </span>
-          <span>{totalSteps > 1 ? Math.round(((currentStepIndex) / (totalSteps - 1)) * 100) : 0}% Complete</span>
-        </div>
-        <div className="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
-          <div
-            className={`h-full transition-all duration-300 ${
-              mitm ? "bg-gradient-to-r from-sky-500 via-rose-500 to-rose-600" : "bg-gradient-to-r from-sky-500 to-emerald-500"
-            }`}
-            style={{
-              width: `${totalSteps > 1 ? ((currentStepIndex) / (totalSteps - 1)) * 100 : 0}%`,
-            }}
-          />
+          {/* Speed Toggle */}
+          <div className="flex items-center gap-1 bg-neutral-900 border border-neutral-800 rounded-lg p-1 text-xs ml-2 font-mono">
+            {[1, 2].map((s) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => onSpeedChange(s)}
+                className={`px-2.5 py-1 rounded font-bold transition-all ${
+                  playbackSpeed === s
+                    ? "bg-neutral-800 text-orange-400"
+                    : "text-neutral-400 hover:text-neutral-200"
+                }`}
+              >
+                {s}x
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </div>

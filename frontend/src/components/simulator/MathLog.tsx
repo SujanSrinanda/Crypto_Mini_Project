@@ -26,33 +26,33 @@ export const MathLog: React.FC<MathLogProps> = ({
   const getActorBadge = (actor: string) => {
     switch (actor) {
       case "Alice":
-        return "bg-sky-500/20 text-sky-300 border-sky-500/30";
+        return "bg-blue-500/20 text-blue-300 border-blue-500/30";
       case "Bob":
         return "bg-emerald-500/20 text-emerald-300 border-emerald-500/30";
       case "Eve":
         return "bg-rose-500/20 text-rose-300 border-rose-500/30";
       case "Channel":
-        return "bg-amber-500/20 text-amber-300 border-amber-500/30";
+        return "bg-orange-500/20 text-orange-300 border-orange-500/30";
       default:
-        return "bg-indigo-500/20 text-indigo-300 border-indigo-500/30";
+        return "bg-neutral-800 text-neutral-300 border-neutral-700";
     }
   };
 
   return (
-    <div className="glass-panel rounded-2xl p-5 border border-slate-800 flex flex-col h-[650px] shadow-xl">
+    <div className="bg-[#0c0c12] rounded-2xl p-6 border-2 border-neutral-800 flex flex-col h-[650px] shadow-xl text-left">
       {/* Header */}
-      <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-        <div className="flex items-center gap-2">
-          <BookOpen className="w-5 h-5 text-indigo-400" />
-          <h3 className="font-bold text-sm text-white">Live Mathematical Log</h3>
+      <div className="flex items-center justify-between pb-3 border-b border-neutral-800">
+        <div className="flex items-center gap-2.5">
+          <BookOpen className="w-5 h-5 text-orange-400" />
+          <h3 className="font-extrabold text-base text-white">Live Mathematical Step Log</h3>
         </div>
-        <span className="text-[11px] text-slate-400 font-mono">
-          {steps.length} Steps Recorded
+        <span className="text-xs text-neutral-400 font-mono font-bold">
+          {steps.length} Steps Logged
         </span>
       </div>
 
       {/* Steps List */}
-      <div className="flex-1 overflow-y-auto mt-3 pr-1 space-y-2.5">
+      <div className="flex-1 overflow-y-auto mt-4 pr-1.5 space-y-3">
         {steps.map((item, idx) => {
           const isActive = idx === currentStepIndex;
 
@@ -60,24 +60,24 @@ export const MathLog: React.FC<MathLogProps> = ({
             <div
               key={item.step}
               onClick={() => onJumpToStep(item.step)}
-              className={`p-3.5 rounded-xl border transition-all cursor-pointer text-left ${
+              className={`p-4 rounded-xl border-2 transition-all cursor-pointer text-left ${
                 isActive
-                  ? "bg-slate-800/90 border-sky-500 shadow-md shadow-sky-500/10 ring-1 ring-sky-500/30"
-                  : "bg-slate-950/60 border-slate-800/80 hover:bg-slate-900/60 hover:border-slate-700"
+                  ? "bg-neutral-900 border-orange-500 shadow-lg shadow-orange-500/10 ring-1 ring-orange-500/40"
+                  : "bg-neutral-950/70 border-neutral-800/80 hover:bg-neutral-900/60 hover:border-neutral-700"
               }`}
             >
               {/* Step & Actor Badges */}
-              <div className="flex items-center justify-between gap-2 mb-1.5">
+              <div className="flex items-center justify-between gap-2 mb-2">
                 <div className="flex items-center gap-2">
                   <span
-                    className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-md ${
-                      isActive ? "bg-sky-500 text-white" : "bg-slate-800 text-slate-400"
+                    className={`text-xs font-mono font-bold px-2 py-0.5 rounded-md ${
+                      isActive ? "bg-orange-500 text-white" : "bg-neutral-800 text-neutral-400"
                     }`}
                   >
                     Step {item.step}
                   </span>
                   <span
-                    className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${getActorBadge(
+                    className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full border ${getActorBadge(
                       item.actor
                     )}`}
                   >
@@ -88,7 +88,7 @@ export const MathLog: React.FC<MathLogProps> = ({
                 <button
                   type="button"
                   onClick={(e) => copyStep(item, idx, e)}
-                  className="text-slate-500 hover:text-slate-300 transition-colors p-1"
+                  className="text-neutral-500 hover:text-white p-1"
                   aria-label="Copy step details"
                 >
                   {copiedIndex === idx ? (
@@ -100,19 +100,19 @@ export const MathLog: React.FC<MathLogProps> = ({
               </div>
 
               {/* Title */}
-              <h4 className="text-xs font-bold text-slate-100 flex items-center justify-between">
+              <h4 className="text-sm font-bold text-white flex items-center justify-between">
                 <span>{item.action}</span>
-                {isActive && <ChevronRight className="w-3.5 h-3.5 text-sky-400 shrink-0" />}
+                {isActive && <ChevronRight className="w-4 h-4 text-orange-400 shrink-0" />}
               </h4>
 
               {/* Plain English explanation */}
-              <p className="text-[11px] text-slate-300 mt-1 leading-relaxed">
+              <p className="text-xs text-neutral-300 mt-1.5 leading-relaxed">
                 {item.description}
               </p>
 
               {/* Formula */}
               {item.formula && (
-                <div className="mt-2 px-2.5 py-1.5 rounded-lg bg-slate-950/90 border border-slate-800 font-mono text-[11px] text-indigo-300 overflow-x-auto select-all">
+                <div className="mt-2.5 px-3 py-1.5 rounded-lg bg-neutral-950 border border-neutral-800 font-mono text-xs text-orange-300 font-bold overflow-x-auto select-all">
                   <code>{item.formula}</code>
                 </div>
               )}

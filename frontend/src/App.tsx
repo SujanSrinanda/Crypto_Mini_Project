@@ -10,7 +10,7 @@ import { GuidedTourModal } from "./components/GuidedTourModal";
 
 export const AppContent: React.FC = () => {
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 cyber-grid relative selection:bg-sky-500/30 selection:text-sky-200">
+    <div className="min-h-screen bg-[#050508] text-neutral-100 relative selection:bg-orange-500/30 selection:text-orange-200">
       <Navbar />
 
       <main>

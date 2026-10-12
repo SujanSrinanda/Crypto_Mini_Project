@@ -1,121 +1,151 @@
 import React from "react";
-import { motion } from "framer-motion";
-import { ArrowRight, Play, BookOpen, Key, ShieldCheck, Flame } from "lucide-react";
+import { ArrowDown, BookOpen, KeyRound, Shield, Lock, Unlock, Play } from "lucide-react";
 
 export const HeroSection: React.FC = () => {
   return (
-    <section className="relative overflow-hidden pt-12 pb-20 md:pt-20 md:pb-28">
-      {/* Background cyber orbs and mesh */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-gradient-to-tr from-sky-600/20 via-indigo-600/15 to-emerald-500/15 blur-[120px] rounded-full pointer-events-none -z-10" />
-      <div className="absolute top-12 left-10 w-72 h-72 bg-sky-500/10 blur-[90px] rounded-full pointer-events-none -z-10" />
-      <div className="absolute top-20 right-10 w-72 h-72 bg-emerald-500/10 blur-[90px] rounded-full pointer-events-none -z-10" />
+    <section className="relative overflow-hidden pt-12 pb-16 md:pt-20 md:pb-24 border-b border-neutral-800/80 bg-[#050508]">
+      {/* Subtle warm ambient back-light */}
+      <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-orange-500/5 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-1/3 left-10 w-80 h-80 bg-neutral-800/30 rounded-full blur-[120px] pointer-events-none" />
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        {/* Module badge */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/90 border border-sky-500/30 text-sky-300 text-xs font-semibold tracking-wide shadow-lg shadow-sky-500/5 mb-6"
-        >
-          <span className="flex h-2 w-2 relative">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-sky-500"></span>
-          </span>
-          Cryptography & Network Security &bull; Module 2 Project
-        </motion.div>
-
-        {/* Main Headline */}
-        <motion.h1
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-white max-w-4xl mx-auto leading-tight md:leading-[1.12]"
-        >
-          See how two strangers agree on a{" "}
-          <span className="bg-gradient-to-r from-sky-400 via-indigo-300 to-emerald-400 bg-clip-text text-transparent underline decoration-sky-500/30 decoration-wavy">
-            secret in public
-          </span>
-        </motion.h1>
-
-        {/* Subtitle */}
-        <motion.p
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="mt-6 text-base sm:text-lg md:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed"
-        >
-          An interactive laboratory simulating the <strong>Diffie-Hellman Key Exchange (DHKE)</strong> and demonstrating the classic <strong>Man-in-the-Middle (MITM)</strong> attack with live modular math, packet interception, and authenticated defense.
-        </motion.p>
-
-        {/* CTA Buttons */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="mt-9 flex flex-col sm:flex-row items-center justify-center gap-4"
-        >
-          <a
-            href="#simulator"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl bg-gradient-to-r from-sky-500 via-indigo-600 to-emerald-500 hover:from-sky-400 hover:to-emerald-400 text-white font-semibold text-sm shadow-xl shadow-sky-500/25 hover:shadow-sky-500/40 transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0"
-          >
-            <Play className="w-4 h-4 fill-white" />
-            <span>Start Interactive Demo</span>
-          </a>
-
-          <a
-            href="#analogy"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-slate-900/90 hover:bg-slate-800/90 text-slate-200 hover:text-white font-medium text-sm border border-slate-700/80 hover:border-slate-600 transition-all duration-200"
-          >
-            <BookOpen className="w-4 h-4 text-sky-400" />
-            <span>How It Works (Paint Analogy)</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </a>
-        </motion.div>
-
-        {/* Value Prop Badges */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.4 }}
-          className="mt-14 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto text-left"
-        >
-          <div className="glass-panel p-4 rounded-xl border border-slate-800/80 bg-slate-900/50 flex items-start gap-3">
-            <div className="p-2 rounded-lg bg-sky-500/10 text-sky-400 border border-sky-500/20">
-              <Key className="w-4 h-4" />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+          {/* Left Column: Heading, Subtitle & Orange CTAs */}
+          <div className="lg:col-span-7 space-y-6 text-left">
+            {/* Pill Tag in Orange */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-500/10 border border-orange-500/25 text-orange-400 text-xs font-semibold tracking-wide">
+              <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+              Cryptography & Network Security &bull; Module 2 Project
             </div>
-            <div>
-              <h3 className="text-sm font-semibold text-white">No Pre-Shared Key</h3>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Generate symmetric encryption keys across an open, eavesdropped channel.
-              </p>
+
+            {/* Main Title */}
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-white leading-[1.12]">
+              Agreeing on a secret
+              <br />
+              <span className="text-orange-500">
+                in plain sight.
+              </span>
+            </h1>
+
+            {/* Subtitle */}
+            <p className="text-base sm:text-lg text-neutral-300 max-w-xl leading-relaxed font-normal">
+              An interactive laboratory simulating the <strong>Diffie-Hellman Key Exchange (DHKE)</strong> and demonstrating the classic <strong>Man-in-the-Middle (MITM)</strong> attack with modular math, packet interception, and digital certificate defense.
+            </p>
+
+            {/* CTA Buttons (Vibrant Orange Primary Button - No cyan-green gradient!) */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 pt-2">
+              <a
+                href="#simulator"
+                className="inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm shadow-xl shadow-orange-500/25 hover:shadow-orange-500/40 transition-all duration-150 transform hover:-translate-y-0.5 active:translate-y-0"
+              >
+                <Play className="w-4 h-4 fill-white" />
+                <span>Start Interactive Demo</span>
+              </a>
+
+              <a
+                href="#analogy"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-neutral-900 border border-neutral-800 text-neutral-200 hover:text-white hover:border-neutral-700 font-medium text-sm transition-all duration-150"
+              >
+                <BookOpen className="w-4 h-4 text-orange-400" />
+                <span>How It Works (Paint Analogy)</span>
+                <ArrowDown className="w-3.5 h-3.5 text-neutral-400" />
+              </a>
+            </div>
+
+            {/* Bottom Proof Line */}
+            <div className="pt-6 border-t border-neutral-900 flex flex-wrap items-center gap-5 text-xs text-neutral-400">
+              <span className="text-neutral-500 uppercase tracking-wider font-semibold text-[11px]">
+                Core Topics:
+              </span>
+              <span className="flex items-center gap-1.5 text-neutral-200">
+                <KeyRound className="w-3.5 h-3.5 text-orange-400" /> Modular Exponentiation
+              </span>
+              <span className="flex items-center gap-1.5 text-neutral-200">
+                <Lock className="w-3.5 h-3.5 text-emerald-400" /> Discrete Log Hardness
+              </span>
+              <span className="flex items-center gap-1.5 text-neutral-200">
+                <Unlock className="w-3.5 h-3.5 text-rose-400" /> MITM Interception
+              </span>
+              <span className="flex items-center gap-1.5 text-neutral-200">
+                <Shield className="w-3.5 h-3.5 text-orange-400" /> PKI Certificates
+              </span>
             </div>
           </div>
 
-          <div className="glass-panel p-4 rounded-xl border border-slate-800/80 bg-slate-900/50 flex items-start gap-3">
-            <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-              <ShieldCheck className="w-4 h-4" />
-            </div>
-            <div>
-              <h3 className="text-sm font-semibold text-white">Discrete Log Hardness</h3>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Computing <span className="font-mono text-emerald-300">g^x mod p</span> is easy; reversing it is practically impossible.
-              </p>
-            </div>
-          </div>
+          {/* Right Column: Original Cryptographic Key Convergence Visual (Orange & Dark Theme) */}
+          <div className="lg:col-span-5 flex items-center justify-center relative">
+            <div className="relative w-full max-w-[420px] aspect-square rounded-3xl bg-[#0c0c12] border border-neutral-800 p-6 flex flex-col justify-between shadow-2xl overflow-hidden">
+              {/* Subtle orange ambient glow */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-orange-500/10 rounded-full blur-[80px] pointer-events-none" />
 
-          <div className="glass-panel p-4 rounded-xl border border-slate-800/80 bg-slate-900/50 flex items-start gap-3">
-            <div className="p-2 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20">
-              <Flame className="w-4 h-4" />
-            </div>
-            <div>
-              <h3 className="text-sm font-semibold text-white">Active MITM Threat</h3>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Without digital certificates, an active attacker completely takes over the key exchange.
-              </p>
+              {/* Top Party Indicators */}
+              <div className="flex justify-between items-center z-10">
+                <div className="flex items-center gap-2 p-2.5 rounded-xl bg-blue-950/40 border border-blue-500/40">
+                  <div className="w-2.5 h-2.5 rounded-full bg-blue-400 animate-pulse" />
+                  <span className="text-xs font-mono font-bold text-blue-200">Alice (a=6)</span>
+                </div>
+
+                <div className="text-[11px] font-mono text-orange-300 bg-neutral-900 px-3 py-1 rounded-lg border border-neutral-800 font-bold">
+                  p = 23, g = 5
+                </div>
+
+                <div className="flex items-center gap-2 p-2.5 rounded-xl bg-emerald-950/40 border border-emerald-500/40">
+                  <span className="text-xs font-mono font-bold text-emerald-200">Bob (b=15)</span>
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                </div>
+              </div>
+
+              {/* Center Cryptographic Visual Conduit */}
+              <div className="relative my-auto py-6 flex items-center justify-center z-10">
+                {/* SVG Connecting Tracks */}
+                <svg className="absolute inset-0 w-full h-full" viewBox="0 0 320 180" fill="none">
+                  {/* Alice to Center conduit */}
+                  <path
+                    d="M 40 40 C 90 90, 110 90, 160 90"
+                    stroke="#3b82f6"
+                    strokeWidth="2.5"
+                    strokeDasharray="6 4"
+                    className="opacity-75"
+                  />
+                  {/* Bob to Center conduit */}
+                  <path
+                    d="M 280 40 C 230 90, 210 90, 160 90"
+                    stroke="#10b981"
+                    strokeWidth="2.5"
+                    strokeDasharray="6 4"
+                    className="opacity-75"
+                  />
+                </svg>
+
+                {/* Central Shared Vault in Vivid Orange */}
+                <div className="relative z-20 w-32 h-32 rounded-2xl bg-[#14141d] border-2 border-orange-500/80 shadow-2xl shadow-orange-500/20 flex flex-col items-center justify-center text-center p-3">
+                  <KeyRound className="w-8 h-8 text-orange-400 drop-shadow mb-1" />
+                  <span className="text-[10px] uppercase font-bold text-neutral-400 tracking-wider">
+                    Shared Secret
+                  </span>
+                  <span className="text-sm font-mono font-extrabold text-orange-300">
+                    K = g^(ab) mod p
+                  </span>
+                  <span className="text-[11px] font-mono text-emerald-400 font-bold mt-0.5">
+                    K = 2 (MATCH!)
+                  </span>
+                </div>
+              </div>
+
+              {/* Bottom Public Exchange Summary */}
+              <div className="z-10 bg-neutral-900/90 border border-neutral-800 rounded-xl p-3 text-xs space-y-1">
+                <div className="flex justify-between text-neutral-200">
+                  <span>Public Transmissions:</span>
+                  <span className="font-mono text-orange-400 font-bold">A = 8, B = 19</span>
+                </div>
+                <div className="flex justify-between text-neutral-400 text-[11px]">
+                  <span>Passive Observer:</span>
+                  <span className="text-amber-400 font-medium">Cannot deduce a, b, or K</span>
+                </div>
+              </div>
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
