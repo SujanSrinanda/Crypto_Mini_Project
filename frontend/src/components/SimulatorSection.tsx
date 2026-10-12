@@ -196,6 +196,23 @@ export const SimulatorSection: React.FC = () => {
             onSelectStep={jumpToStep}
             mitm={mitm}
             authenticatedDh={authenticatedDh}
+            p={p}
+            g={g}
+            onPChange={setP}
+            onGChange={setG}
+            alicePrivate={alicePrivate}
+            onAlicePrivateChange={setAlicePrivate}
+            bobPrivate={bobPrivate}
+            onBobPrivateChange={setBobPrivate}
+            eveAlicePrivate={eveAlicePrivate}
+            onEveAlicePrivateChange={setEveAlicePrivate}
+            eveBobPrivate={eveBobPrivate}
+            onEveBobPrivateChange={setEveBobPrivate}
+            message={message}
+            onMessageChange={setMessage}
+            tamperedMessage={tamperedMessage}
+            onTamperedMessageChange={setTamperedMessage}
+            onRandomizePrivateKeys={randomizeKeys}
           />
 
           {/* Primary Controls Row: Previous, Next Step ->, Play, Reset, Modes */}

@@ -11,6 +11,7 @@ import {
   FileCode,
   XCircle,
   AlertTriangle,
+  Dices,
 } from "lucide-react";
 import type { SimulationStep, SimulationResult } from "../../lib/crypto";
 
@@ -23,6 +24,24 @@ interface VisualStageProps {
   onSelectStep: (idx: number) => void;
   mitm: boolean;
   authenticatedDh: boolean;
+  // Customizable parameters
+  p: string;
+  g: string;
+  onPChange: (val: string) => void;
+  onGChange: (val: string) => void;
+  alicePrivate: string;
+  onAlicePrivateChange: (val: string) => void;
+  bobPrivate: string;
+  onBobPrivateChange: (val: string) => void;
+  eveAlicePrivate: string;
+  onEveAlicePrivateChange: (val: string) => void;
+  eveBobPrivate: string;
+  onEveBobPrivateChange: (val: string) => void;
+  message: string;
+  onMessageChange: (val: string) => void;
+  tamperedMessage: string;
+  onTamperedMessageChange: (val: string) => void;
+  onRandomizePrivateKeys: () => void;
 }
 
 export const VisualStage: React.FC<VisualStageProps> = ({
@@ -34,6 +53,23 @@ export const VisualStage: React.FC<VisualStageProps> = ({
   onSelectStep,
   mitm,
   authenticatedDh,
+  p,
+  g,
+  onPChange,
+  onGChange,
+  alicePrivate,
+  onAlicePrivateChange,
+  bobPrivate,
+  onBobPrivateChange,
+  eveAlicePrivate,
+  onEveAlicePrivateChange,
+  eveBobPrivate,
+  onEveBobPrivateChange,
+  message,
+  onMessageChange,
+  tamperedMessage,
+  onTamperedMessageChange,
+  onRandomizePrivateKeys,
 }) => {
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
@@ -106,30 +142,52 @@ export const VisualStage: React.FC<VisualStageProps> = ({
             )}
           </div>
 
-          {/* Numeric Values Grid */}
+          {/* Numeric Values Grid (Customizable Private 'a' + Calculated Public 'A') */}
           <div className="grid grid-cols-2 gap-2 font-mono">
-            {/* Private a */}
+            {/* Customizable Private a */}
             <div className="p-2 rounded-xl bg-neutral-950 border border-neutral-800/90 flex items-center justify-between">
-              <div className="min-w-0 pr-1">
-                <span className="text-[11px] text-neutral-400 font-sans block font-semibold">Private (a)</span>
-                <span className="text-sm sm:text-[15px] font-bold text-blue-300 truncate block mt-0.5">
-                  a = {summary.alice_private || "?"}
-                </span>
+              <div className="min-w-0 pr-1 flex-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] text-neutral-400 font-sans font-semibold">Private (a)</span>
+                </div>
+                <div className="flex items-center gap-1 mt-0.5">
+                  <span className="text-sm font-bold text-blue-300">a=</span>
+                  <input
+                    type="text"
+                    value={alicePrivate}
+                    onChange={(e) => onAlicePrivateChange(e.target.value)}
+                    className="w-16 px-1.5 py-0.5 bg-neutral-900 border border-blue-500/40 focus:border-blue-400 rounded text-blue-300 font-mono text-sm font-bold focus:outline-none transition-colors"
+                    title="Customize Alice private exponent (secret integer)"
+                    aria-label="Alice private exponent"
+                  />
+                </div>
               </div>
-              <button
-                type="button"
-                onClick={() => copyToClipboard(summary.alice_private || "", "a")}
-                className="text-neutral-500 hover:text-white shrink-0 p-1"
-                title="Copy private exponent"
-              >
-                {copiedKey === "a" ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-              </button>
+              <div className="flex items-center gap-0.5 shrink-0">
+                <button
+                  type="button"
+                  onClick={onRandomizePrivateKeys}
+                  className="text-neutral-500 hover:text-blue-400 p-1"
+                  title="Roll random private key"
+                >
+                  <Dices className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => copyToClipboard(alicePrivate, "a")}
+                  className="text-neutral-500 hover:text-white p-1"
+                  title="Copy private exponent"
+                >
+                  {copiedKey === "a" ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                </button>
+              </div>
             </div>
 
-            {/* Public A */}
+            {/* Automatically Calculated Public A = g^a mod p */}
             <div className="p-2 rounded-xl bg-neutral-950 border border-neutral-800/90 flex items-center justify-between">
               <div className="min-w-0 pr-1">
-                <span className="text-[11px] text-neutral-400 font-sans block font-semibold">Public (A)</span>
+                <span className="text-[11px] text-neutral-400 font-sans block font-semibold truncate" title="A = g^a mod p">
+                  Public (A = g^a mod p)
+                </span>
                 <span className="text-sm sm:text-[15px] font-bold text-white truncate block mt-0.5">
                   A = {summary.alice_public || "?"}
                 </span>
@@ -145,7 +203,7 @@ export const VisualStage: React.FC<VisualStageProps> = ({
             </div>
           </div>
 
-          {/* Computed Shared Key */}
+          {/* Automatically Calculated Shared Key K_A = B^a mod p */}
           <div
             className={`p-2.5 rounded-xl border transition-all flex items-center justify-between ${
               simulation?.keys_match && currentStepIndex >= 4
@@ -157,7 +215,7 @@ export const VisualStage: React.FC<VisualStageProps> = ({
           >
             <div>
               <span className="text-[11px] text-neutral-400 uppercase font-semibold block leading-none">
-                Alice's Computed Key
+                Alice Computed Key {mitm ? "(E_A^a mod p)" : "(B^a mod p)"}
               </span>
               <span className="font-mono text-sm sm:text-base font-black text-blue-300 block mt-1">
                 K_A = {summary.alice_shared || "Pending..."}
@@ -175,7 +233,7 @@ export const VisualStage: React.FC<VisualStageProps> = ({
             )}
           </div>
 
-          {/* Outbox Message Strip (Appears gracefully when message phase is reached) */}
+          {/* Outbox Message Strip (Customizable message, appears when message phase is reached) */}
           <AnimatePresence>
             {showMessages && (
               <motion.div
@@ -184,13 +242,18 @@ export const VisualStage: React.FC<VisualStageProps> = ({
                 exit={{ opacity: 0, height: 0 }}
                 className="pt-1 overflow-hidden"
               >
-                <div className="p-2 rounded-xl bg-neutral-950 border border-neutral-800 flex items-center justify-between text-xs sm:text-[13px]">
+                <div className="p-2 rounded-xl bg-neutral-950 border border-neutral-800 flex items-center justify-between text-xs sm:text-[13px] gap-2">
                   <span className="text-neutral-400 flex items-center gap-1.5 font-semibold shrink-0">
                     <Send className="w-3.5 h-3.5 text-blue-400" /> Outbox:
                   </span>
-                  <span className="text-neutral-200 font-medium truncate ml-2 text-right">
-                    "{summary.original_message || "Secret rendezvous..."}"
-                  </span>
+                  <input
+                    type="text"
+                    value={message}
+                    onChange={(e) => onMessageChange(e.target.value)}
+                    className="flex-1 px-2 py-0.5 bg-neutral-900 border border-neutral-700 focus:border-blue-500 rounded text-neutral-100 text-xs focus:outline-none"
+                    placeholder="Alice's plaintext message"
+                    title="Customize Alice's plaintext message"
+                  />
                 </div>
               </motion.div>
             )}
@@ -207,7 +270,7 @@ export const VisualStage: React.FC<VisualStageProps> = ({
               : "bg-[#0a0a10] border-neutral-800"
           }`}
         >
-          {/* Header */}
+          {/* Header (with directly editable p & g parameters) */}
           <div className="flex items-center justify-between pb-2 border-b border-neutral-800/90">
             <div className="flex items-center gap-2">
               {mitm ? (
@@ -229,14 +292,32 @@ export const VisualStage: React.FC<VisualStageProps> = ({
               </div>
             </div>
 
+            {/* Directly Customizable p and g */}
             {mitm ? (
               <span className="px-2.5 py-0.5 rounded-full bg-rose-500 text-white font-mono font-bold text-[10px] uppercase tracking-wider animate-pulse">
                 INTRUDER
               </span>
             ) : (
-              <span className="font-mono text-xs font-bold text-orange-300 bg-neutral-950 px-2 py-0.5 rounded-lg border border-neutral-800">
-                p={summary.p || "23"} g={summary.g || "5"}
-              </span>
+              <div className="flex items-center gap-1 font-mono text-xs font-bold text-orange-300 bg-neutral-950 px-2 py-0.5 rounded-lg border border-neutral-800">
+                <span className="text-neutral-400">p=</span>
+                <input
+                  type="text"
+                  value={p}
+                  onChange={(e) => onPChange(e.target.value)}
+                  className="w-12 px-1 py-0.5 bg-neutral-900 border border-neutral-700 focus:border-orange-500 rounded text-orange-300 text-xs font-bold text-center focus:outline-none"
+                  title="Customize Prime modulus p"
+                  aria-label="Prime modulus p"
+                />
+                <span className="text-neutral-400 ml-1">g=</span>
+                <input
+                  type="text"
+                  value={g}
+                  onChange={(e) => onGChange(e.target.value)}
+                  className="w-8 px-1 py-0.5 bg-neutral-900 border border-neutral-700 focus:border-orange-500 rounded text-orange-300 text-xs font-bold text-center focus:outline-none"
+                  title="Customize Generator base g"
+                  aria-label="Generator base g"
+                />
+              </div>
             )}
           </div>
 
@@ -270,22 +351,48 @@ export const VisualStage: React.FC<VisualStageProps> = ({
             </div>
           </div>
 
-          {/* Eve Active Intercept Details (when MITM is ON) */}
+          {/* Eve Active Intercept Details (when MITM is ON - directly customizable rogue exponents) */}
           {mitm ? (
             <div className="space-y-1.5 font-mono text-xs">
               <div className="grid grid-cols-2 gap-1.5">
-                <div className="p-1.5 rounded-lg bg-neutral-950 border border-rose-900/60 truncate">
-                  <span className="text-[10px] text-neutral-400 block font-sans">Eve→Alice:</span>
-                  <span className="text-rose-300 font-bold">E_A = {summary.eve_public_alice || "?"}</span>
+                <div className="p-1.5 rounded-lg bg-neutral-950 border border-rose-900/60">
+                  <span className="text-[10px] text-neutral-400 block font-sans">Eve Exponent (e_A):</span>
+                  <div className="flex items-center gap-1 mt-0.5">
+                    <span className="text-rose-300 font-bold">e_A=</span>
+                    <input
+                      type="text"
+                      value={eveAlicePrivate}
+                      onChange={(e) => onEveAlicePrivateChange(e.target.value)}
+                      className="w-12 px-1 py-0.5 bg-neutral-900 border border-rose-800/80 rounded text-rose-300 text-xs font-bold focus:border-rose-500 focus:outline-none"
+                      title="Eve's rogue exponent for Alice"
+                    />
+                  </div>
+                  <span className="text-[10px] text-neutral-400 block mt-0.5">E_A={summary.eve_public_alice || "?"}</span>
                 </div>
-                <div className="p-1.5 rounded-lg bg-neutral-950 border border-rose-900/60 truncate">
-                  <span className="text-[10px] text-neutral-400 block font-sans">Eve→Bob:</span>
-                  <span className="text-rose-300 font-bold">E_B = {summary.eve_public_bob || "?"}</span>
+                <div className="p-1.5 rounded-lg bg-neutral-950 border border-rose-900/60">
+                  <span className="text-[10px] text-neutral-400 block font-sans">Eve Exponent (e_B):</span>
+                  <div className="flex items-center gap-1 mt-0.5">
+                    <span className="text-rose-300 font-bold">e_B=</span>
+                    <input
+                      type="text"
+                      value={eveBobPrivate}
+                      onChange={(e) => onEveBobPrivateChange(e.target.value)}
+                      className="w-12 px-1 py-0.5 bg-neutral-900 border border-rose-800/80 rounded text-rose-300 text-xs font-bold focus:border-rose-500 focus:outline-none"
+                      title="Eve's rogue exponent for Bob"
+                    />
+                  </div>
+                  <span className="text-[10px] text-neutral-400 block mt-0.5">E_B={summary.eve_public_bob || "?"}</span>
                 </div>
               </div>
-              <div className="p-1.5 rounded-lg bg-neutral-950 border border-rose-900/60 truncate text-rose-300">
-                <span className="text-rose-400 font-bold">Forged Msg: </span>
-                <span className="text-rose-200">"{summary.tampered_message || "Wire $1,000,000..."}"</span>
+              <div className="p-1.5 rounded-lg bg-neutral-950 border border-rose-900/60 text-xs flex items-center gap-1.5">
+                <span className="text-rose-400 font-bold shrink-0">Forged:</span>
+                <input
+                  type="text"
+                  value={tamperedMessage}
+                  onChange={(e) => onTamperedMessageChange(e.target.value)}
+                  className="flex-1 px-1.5 py-0.5 bg-neutral-900 border border-rose-900 focus:border-rose-500 rounded text-rose-200 text-xs focus:outline-none"
+                  title="Eve's tampered/forged message"
+                />
               </div>
             </div>
           ) : (
@@ -294,7 +401,7 @@ export const VisualStage: React.FC<VisualStageProps> = ({
                 Public Interception Ledger:
               </span>
               <span className="text-orange-400 font-bold block mt-0.5 truncate">
-                p = {summary.p || "23"}, g = {summary.g || "5"}, A = {summary.alice_public || "?"}, B = {summary.bob_public || "?"}
+                p = {p}, g = {g}, A = {summary.alice_public || "?"}, B = {summary.bob_public || "?"}
               </span>
             </div>
           )}
@@ -335,30 +442,52 @@ export const VisualStage: React.FC<VisualStageProps> = ({
             )}
           </div>
 
-          {/* Numeric Values Grid */}
+          {/* Numeric Values Grid (Customizable Private 'b' + Calculated Public 'B') */}
           <div className="grid grid-cols-2 gap-2 font-mono">
-            {/* Private b */}
+            {/* Customizable Private b */}
             <div className="p-2 rounded-xl bg-neutral-950 border border-neutral-800/90 flex items-center justify-between">
-              <div className="min-w-0 pr-1">
-                <span className="text-[11px] text-neutral-400 font-sans block font-semibold">Private (b)</span>
-                <span className="text-sm sm:text-[15px] font-bold text-emerald-300 truncate block mt-0.5">
-                  b = {summary.bob_private || "?"}
-                </span>
+              <div className="min-w-0 pr-1 flex-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] text-neutral-400 font-sans font-semibold">Private (b)</span>
+                </div>
+                <div className="flex items-center gap-1 mt-0.5">
+                  <span className="text-sm font-bold text-emerald-300">b=</span>
+                  <input
+                    type="text"
+                    value={bobPrivate}
+                    onChange={(e) => onBobPrivateChange(e.target.value)}
+                    className="w-16 px-1.5 py-0.5 bg-neutral-900 border border-emerald-500/40 focus:border-emerald-400 rounded text-emerald-300 font-mono text-sm font-bold focus:outline-none transition-colors"
+                    title="Customize Bob private exponent (secret integer)"
+                    aria-label="Bob private exponent"
+                  />
+                </div>
               </div>
-              <button
-                type="button"
-                onClick={() => copyToClipboard(summary.bob_private || "", "b")}
-                className="text-neutral-500 hover:text-white shrink-0 p-1"
-                title="Copy private exponent"
-              >
-                {copiedKey === "b" ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-              </button>
+              <div className="flex items-center gap-0.5 shrink-0">
+                <button
+                  type="button"
+                  onClick={onRandomizePrivateKeys}
+                  className="text-neutral-500 hover:text-emerald-400 p-1"
+                  title="Roll random private key"
+                >
+                  <Dices className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => copyToClipboard(bobPrivate, "b")}
+                  className="text-neutral-500 hover:text-white p-1"
+                  title="Copy private exponent"
+                >
+                  {copiedKey === "b" ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                </button>
+              </div>
             </div>
 
-            {/* Public B */}
+            {/* Automatically Calculated Public B = g^b mod p */}
             <div className="p-2 rounded-xl bg-neutral-950 border border-neutral-800/90 flex items-center justify-between">
               <div className="min-w-0 pr-1">
-                <span className="text-[11px] text-neutral-400 font-sans block font-semibold">Public (B)</span>
+                <span className="text-[11px] text-neutral-400 font-sans block font-semibold truncate" title="B = g^b mod p">
+                  Public (B = g^b mod p)
+                </span>
                 <span className="text-sm sm:text-[15px] font-bold text-white truncate block mt-0.5">
                   B = {summary.bob_public || "?"}
                 </span>
@@ -374,7 +503,7 @@ export const VisualStage: React.FC<VisualStageProps> = ({
             </div>
           </div>
 
-          {/* Computed Shared Key */}
+          {/* Automatically Calculated Shared Key K_B = A^b mod p */}
           <div
             className={`p-2.5 rounded-xl border transition-all flex items-center justify-between ${
               simulation?.keys_match && currentStepIndex >= 4
@@ -386,7 +515,7 @@ export const VisualStage: React.FC<VisualStageProps> = ({
           >
             <div>
               <span className="text-[11px] text-neutral-400 uppercase font-semibold block leading-none">
-                Bob's Computed Key
+                Bob Computed Key {mitm ? "(E_B^b mod p)" : "(A^b mod p)"}
               </span>
               <span className="font-mono text-sm sm:text-base font-black text-emerald-300 block mt-1">
                 K_B = {summary.bob_shared || "Pending..."}
