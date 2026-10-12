@@ -3,11 +3,37 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    scroll-behavior: initial; /* Lenis handles smooth scrolling */
+  }
+
   body {
     @apply transition-colors duration-200 font-sans bg-[#050508] text-[#f4f4f6];
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
   }
+}
+
+/* Lenis smooth scrolling integration */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
 }
 
 /* Custom scrollbars */
