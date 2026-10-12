@@ -33,7 +33,7 @@ export function initSmoothScroll(): Lenis {
     const href = target.getAttribute("href");
     if (href && href.startsWith("#") && href.length > 1) {
       e.preventDefault();
-      scrollToTarget(href, -84);
+      scrollToTarget(href, -78);
     }
   };
 
@@ -49,7 +49,7 @@ export function getLenis(): Lenis | null {
 /**
  * Programmatically scroll to target with smooth easing and custom navbar offset.
  */
-export function scrollToTarget(target: string | HTMLElement, offset: number = -84) {
+export function scrollToTarget(target: string | HTMLElement, offset: number = -78) {
   if (lenisInstance) {
     lenisInstance.scrollTo(target, {
       offset,

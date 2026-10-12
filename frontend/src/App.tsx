@@ -22,7 +22,7 @@ export const AppContent: React.FC = () => {
     <div className="min-h-screen bg-[#050508] text-neutral-100 relative selection:bg-orange-500/30 selection:text-orange-200">
       <Navbar />
 
-      <main>
+      <main className="pt-[86px]">
         <HeroSection />
         <SimulatorSection />
         <LearnExploreSection />

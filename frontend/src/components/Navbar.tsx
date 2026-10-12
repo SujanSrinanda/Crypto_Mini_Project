@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Sun,
@@ -20,7 +20,6 @@ interface NavItem {
   id: string;
   label: string;
   href: string;
-  icon?: React.ReactNode;
 }
 
 export const Navbar: React.FC = () => {
@@ -36,7 +35,9 @@ export const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
   const [activeSection, setActiveSection] = useState<string>("simulator");
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
-  const [hoveredLink, setHoveredLink] = useState<string | null>(null);
+
+  const isManualScrolling = useRef<boolean>(false);
+  const manualScrollTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const navLinks: NavItem[] = [
     { id: "simulator", label: "Simulator", href: "#simulator" },
@@ -50,18 +51,27 @@ export const Navbar: React.FC = () => {
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
-      setIsScrolled(scrollY > 25);
+      setIsScrolled(scrollY > 40);
 
-      // Section spy
-      const sections = navLinks.map((l) => l.id);
-      const scrollPosition = scrollY + 140;
+      // Don't fight programmatic clicks while smooth scrolling is active
+      if (isManualScrolling.current) return;
 
-      for (let i = sections.length - 1; i >= 0; i--) {
-        const el = document.getElementById(sections[i]);
+      // If near the top, highlight Simulator
+      if (scrollY < 250) {
+        setActiveSection("simulator");
+        return;
+      }
+
+      // Check sections from bottom to top using accurate viewport geometry
+      const sections = ["syllabus", "defense", "complexity", "analogy", "simulator"];
+      const triggerPoint = window.innerHeight * 0.35;
+
+      for (const id of sections) {
+        const el = document.getElementById(id);
         if (el) {
-          const top = el.offsetTop;
-          if (scrollPosition >= top) {
-            setActiveSection(sections[i]);
+          const rect = el.getBoundingClientRect();
+          if (rect.top <= triggerPoint) {
+            setActiveSection(id);
             break;
           }
         }
@@ -70,18 +80,28 @@ export const Navbar: React.FC = () => {
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (manualScrollTimer.current) clearTimeout(manualScrollTimer.current);
+    };
   }, []);
 
   const handleNavClick = (href: string, id: string) => {
     setActiveSection(id);
     setMobileMenuOpen(false);
-    scrollToTarget(href, -84);
+    isManualScrolling.current = true;
+
+    if (manualScrollTimer.current) clearTimeout(manualScrollTimer.current);
+    manualScrollTimer.current = setTimeout(() => {
+      isManualScrolling.current = false;
+    }, 1100);
+
+    scrollToTarget(href, -78);
   };
 
   return (
     <header
-      className={`sticky top-0 z-50 transition-all duration-300 ease-out ${
+      className={`fixed top-0 inset-x-0 z-50 transition-[background-color,border-color,box-shadow,backdrop-filter] duration-300 ease-out ${
         isScrolled
           ? "bg-[#050508]/85 backdrop-blur-2xl border-b border-white/[0.08] shadow-[0_12px_36px_rgba(0,0,0,0.7)]"
           : "bg-[#050508]/70 backdrop-blur-xl border-b border-white/[0.05]"
@@ -90,22 +110,28 @@ export const Navbar: React.FC = () => {
       {/* Ambient Top Glow Line */}
       <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-orange-500/40 to-transparent pointer-events-none" />
 
-      {/* Main Bar Container */}
+      {/* Main Bar Container with smooth height transition */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
         <div
-          className={`flex items-center justify-between transition-all duration-300 ease-out ${
+          className={`flex items-center justify-between transition-[height] duration-300 ease-out ${
             isScrolled ? "h-[68px]" : "h-[86px]"
           }`}
         >
           {/* ===================== BRAND LOGO ===================== */}
-          <div className="flex items-center gap-3 relative">
-            {/* Subtle ambient logo glow */}
+          <div className="flex items-center gap-3 relative shrink-0">
+            {/* Ambient logo glow */}
             <div className="absolute -left-4 -top-2 w-24 h-20 bg-orange-500/15 blur-2xl rounded-full pointer-events-none" />
 
             <a
               href="#"
               onClick={(e) => {
                 e.preventDefault();
+                setActiveSection("simulator");
+                isManualScrolling.current = true;
+                if (manualScrollTimer.current) clearTimeout(manualScrollTimer.current);
+                manualScrollTimer.current = setTimeout(() => {
+                  isManualScrolling.current = false;
+                }, 1100);
                 scrollToTarget("body", 0);
               }}
               className="flex items-center gap-3 group relative z-10"
@@ -118,7 +144,7 @@ export const Navbar: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-2.5 whitespace-nowrap">
                 <span className="text-[17px] font-extrabold tracking-tight text-white group-hover:text-white/95 transition-colors">
                   KeyExchange<span className="text-orange-500">Lab</span>
                 </span>
@@ -131,12 +157,11 @@ export const Navbar: React.FC = () => {
 
           {/* ===================== CENTER NAV MENU ITEMS ===================== */}
           <nav
-            className="hidden md:flex items-center gap-2 lg:gap-3 px-3 py-1.5 rounded-full bg-neutral-950/60 border border-white/[0.06] shadow-inner"
+            className="hidden lg:flex items-center gap-1.5 p-1 rounded-full bg-neutral-950/70 border border-white/[0.08] shadow-inner"
             aria-label="Main Navigation"
           >
             {navLinks.map((link) => {
               const isActive = activeSection === link.id;
-              const isHovered = hoveredLink === link.id;
 
               return (
                 <a
@@ -146,33 +171,23 @@ export const Navbar: React.FC = () => {
                     e.preventDefault();
                     handleNavClick(link.href, link.id);
                   }}
-                  onMouseEnter={() => setHoveredLink(link.id)}
-                  onMouseLeave={() => setHoveredLink(null)}
-                  className={`relative px-4 py-2 rounded-full text-[14px] lg:text-[15px] font-semibold transition-colors duration-200 ${
+                  className={`relative px-4 py-2 rounded-full text-[14px] font-semibold whitespace-nowrap transition-colors duration-200 select-none ${
                     isActive
                       ? "text-white font-bold"
-                      : "text-neutral-400 hover:text-neutral-100"
+                      : "text-neutral-400 hover:text-white hover:bg-white/[0.04]"
                   }`}
                 >
                   {/* Active Animated Pill (Framer Motion) */}
                   {isActive && (
-                    <motion.div
+                    <motion.span
                       layoutId="activeNavIndicator"
-                      className="absolute inset-0 rounded-full bg-gradient-to-r from-orange-500/20 via-orange-500/25 to-orange-500/20 border border-orange-500/40 shadow-[0_0_16px_rgba(249,115,22,0.3)]"
+                      className="absolute inset-0 rounded-full bg-gradient-to-r from-orange-500/20 via-orange-500/25 to-orange-500/20 border border-orange-500/40 shadow-[0_0_16px_rgba(249,115,22,0.25)]"
                       transition={{
                         type: "spring",
-                        stiffness: 400,
-                        damping: 32,
+                        stiffness: 380,
+                        damping: 30,
+                        mass: 0.8,
                       }}
-                    />
-                  )}
-
-                  {/* Hover Pill when not active */}
-                  {!isActive && isHovered && (
-                    <motion.div
-                      layoutId="hoverNavIndicator"
-                      className="absolute inset-0 rounded-full bg-white/[0.05]"
-                      transition={{ duration: 0.15 }}
                     />
                   )}
 
@@ -185,7 +200,7 @@ export const Navbar: React.FC = () => {
           </nav>
 
           {/* ===================== RIGHT ACTION CONTROLS ===================== */}
-          <div className="hidden sm:flex items-center gap-3">
+          <div className="hidden sm:flex items-center gap-3 shrink-0">
             {/* Engine Pill Switcher */}
             <Tooltip content={engine === "api" ? "FastAPI Server Active (Port 8000)" : "In-Browser BigInt Active"}>
               <div className="flex items-center bg-neutral-900/90 border border-neutral-700/70 rounded-full p-1 text-xs shadow-inner">
@@ -251,7 +266,7 @@ export const Navbar: React.FC = () => {
             <button
               type="button"
               onClick={() => handleNavClick("#simulator", "simulator")}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold text-xs sm:text-[13px] shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold text-xs sm:text-[13px] shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 whitespace-nowrap"
             >
               <span>Launch Demo</span>
               <ArrowRight className="w-4 h-4" />
@@ -259,10 +274,10 @@ export const Navbar: React.FC = () => {
           </div>
 
           {/* ===================== MOBILE HAMBURGER TOGGLE ===================== */}
-          <div className="flex md:hidden items-center gap-2">
+          <div className="flex lg:hidden items-center gap-2">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2.5 text-neutral-300 rounded-xl bg-neutral-900 border border-neutral-700/80 shadow-md"
+              className="p-2.5 text-neutral-300 rounded-xl bg-neutral-900 border border-neutral-700/80 shadow-md hover:text-white transition-colors"
               aria-label="Toggle mobile menu"
             >
               {mobileMenuOpen ? <X className="w-5 h-5 text-orange-400" /> : <Menu className="w-5 h-5" />}
@@ -282,7 +297,7 @@ export const Navbar: React.FC = () => {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.25, ease: "easeInOut" }}
-            className="md:hidden overflow-hidden bg-[#07070c]/95 backdrop-blur-2xl border-b border-neutral-800 shadow-2xl"
+            className="lg:hidden overflow-hidden bg-[#07070c]/95 backdrop-blur-2xl border-b border-neutral-800 shadow-2xl"
           >
             <div className="px-5 pt-3 pb-6 space-y-3">
               <div className="flex flex-col gap-1.5 pt-1">
